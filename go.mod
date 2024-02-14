@@ -1,4 +1,4 @@
-module server
+module moview
 
 go 1.21.6
 

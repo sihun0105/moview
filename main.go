@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	"server/user"
+	"moview/src/repository/user"
 
 	"github.com/joho/godotenv"
 
