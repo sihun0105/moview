@@ -5,13 +5,19 @@ import (
 )
 
 type User struct {
-    ID        int       `gorm:"primaryKey" json:"id"`
-    Email     string    `json:"email"`
-    Nickname  string    `json:"nickname"`
-    Password  string    `json:"password"`
-    CreatedAt time.Time `json:"createdAt"`
-    UpdatedAt time.Time `json:"updatedAt"`
-    DeletedAt time.Time `gorm:"index" json:"deletedAt"`
+    ID               int           `gorm:"primaryKey"`
+    Email            string        `gorm:"uniqueIndex"`
+    Nickname         string
+    Password         string
+    CreatedAt        time.Time
+    UpdatedAt        time.Time
+    DeletedAt        *time.Time `gorm:"index"`
+    
+    Comments         []Comment   `gorm:"foreignKey:UserNo"`
+    ChannelChats     []ChannelChat `gorm:"foreignKey:UserId"`
+    ChannelMembers   []ChannelMember `gorm:"foreignKey:UserId"`
+    Workspaces       []Workspace `gorm:"foreignKey:OwnerId"`
+    WorkspaceMembers []WorkspaceMember `gorm:"foreignKey:UserId"`
 }
 
 func (User) TableName() string {
