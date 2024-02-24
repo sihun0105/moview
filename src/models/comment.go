@@ -4,7 +4,7 @@ import (
 	"time"
 )
 type Comment struct {
-    ID        int   `json:"cateno" gorm:"primaryKey"`
+    ID        int   `json:"commentId" gorm:"primaryKey"`
     MovieId   int   `json:"movieid" gorm:"column:movieId;not null"`
     CreatedAt time.Time     `json:"created_at" gorm:"column:createdAt;type:datetime;default:CURRENT_TIMESTAMP(6)"`
     UpdatedAt time.Time     `json:"updated_at" gorm:"column:updatedAt;type:datetime;default:CURRENT_TIMESTAMP(6) ON UPDATE CURRENT_TIMESTAMP(6)"`
