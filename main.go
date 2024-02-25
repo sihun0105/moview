@@ -69,7 +69,7 @@ func setupRoutes(
 }
 
 func UpdateMovies(repo repository.MovieRepository) {
-    currentTime := time.Now()
+	currentTime := time.Now().AddDate(0, 0, -1)
 
     date := currentTime.Format("20060102")
     
