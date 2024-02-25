@@ -5,7 +5,9 @@ import (
 	"log"
 	"moview/src/controller"
 	"moview/src/db"
+	"moview/src/lib/common"
 	"moview/src/repository"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
@@ -30,7 +32,15 @@ func main() {
 	commentRepository := repository.NewCommentRepository(DB)
 	commentController := controller.NewCommentController(commentRepository)
 
-	setupRoutes(app, userController, commentController)
+	movieRepository := repository.NewMovieRepository(DB)
+	movieController := controller.NewMovieController(movieRepository)
+
+	common.StartUpdater(func() {
+		UpdateMovies(movieRepository)
+	})
+
+
+	setupRoutes(app, userController, commentController,movieController)
 	port := ":3000"
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(app.Listen(port))
@@ -40,6 +50,7 @@ func setupRoutes(
 	app *fiber.App, 
 	uc *controller.UserController,
 	cc *controller.CommentController,
+	mc *controller.MovieController,
 	) {
 	app.Post("/users", uc.CreateUser)
 	app.Get("/users/:id", uc.GetUserByID)
@@ -50,6 +61,25 @@ func setupRoutes(
 	app.Get("/comments/:id", cc.GetCommentByID)
 	app.Put("/comments/:id", cc.UpdateComment)
 	app.Delete("/comments/:id", cc.DeleteComment)
+
+	app.Get("/movies/:id", mc.GetMovieByID)
+	app.Get("/movies", mc.GetMovies)
+	app.Get("/movies/fetch/:date", mc.FetchMovies)
 	
 }
+
+func UpdateMovies(repo repository.MovieRepository) {
+    currentTime := time.Now()
+
+    date := currentTime.Format("20060102")
+    
+    err := repo.FetchMovies(date)
+    if err != nil {
+        fmt.Println("Failed to update movies:", err)
+        return
+    }
+
+    fmt.Println("Movies updated successfully.")
+}
+
 
