@@ -2,26 +2,22 @@ package common
 
 import (
 	"fmt"
-	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 
 func StartUpdater(updateFunc func()) {
-	ticker := time.NewTicker(24 * time.Hour)
-	now := time.Now()
-	firstTick := time.Date(now.Year(), now.Month(), now.Day(), 12, 0, 0, 0, time.Local)
-	if firstTick.Before(now) {
-		firstTick = firstTick.Add(24 * time.Hour)
-	}
-	timeUntilFirstTick := firstTick.Sub(now)
-
-	fmt.Println("Next update at:", firstTick)
-
-	time.Sleep(timeUntilFirstTick)
-
-	for {
-		<-ticker.C
-		fmt.Println("Updating movies...")
-		updateFunc()
-	}
+    c := cron.New(cron.WithSeconds())
+    
+    _, err := c.AddFunc("0 0 0 * * *", func() {
+        fmt.Println("Updating movies...")
+        updateFunc()
+    })
+    if err != nil {
+        fmt.Println("Error scheduling update:", err)
+        return
+    }
+    c.Start()
+    fmt.Println("Cron scheduler started. Next update at midnight.")
 }

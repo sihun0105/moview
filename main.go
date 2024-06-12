@@ -7,6 +7,7 @@ import (
 	"moview/src/db"
 	"moview/src/lib/common"
 	"moview/src/repository"
+	"os"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -34,14 +35,17 @@ func main() {
 
 	movieRepository := repository.NewMovieRepository(DB)
 	movieController := controller.NewMovieController(movieRepository)
-
+	
 	common.StartUpdater(func() {
 		UpdateMovies(movieRepository)
 	})
 
-
 	setupRoutes(app, userController, commentController,movieController)
-	port := ":3000"
+	port := os.Getenv("PORT")
+    if port == "" {
+        port = "3030"
+    }
+	port = ":" + port
 	fmt.Printf("Server is listening on port %s\n", port)
 	log.Fatal(app.Listen(port))
 }
