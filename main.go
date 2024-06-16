@@ -27,6 +27,9 @@ func main() {
     }
 	app := fiber.New()
 
+	authRepository := repository.NewAuthRepository(DB)
+	authController := controller.NewAuthController(authRepository)
+
 	userRepository := repository.NewUserRepository(DB)
 	userController := controller.NewUserController(userRepository)
 
@@ -40,7 +43,7 @@ func main() {
 		UpdateMovies(movieRepository)
 	})
 
-	setupRoutes(app, userController, commentController,movieController)
+	setupRoutes(app, userController, commentController,movieController,authController)
 	port := os.Getenv("PORT")
     if port == "" {
         port = "3030"
@@ -55,6 +58,7 @@ func setupRoutes(
 	uc *controller.UserController,
 	cc *controller.CommentController,
 	mc *controller.MovieController,
+	ac *controller.AuthController,
 	) {
 	app.Post("/users", uc.CreateUser)
 	app.Get("/users/:id", uc.GetUserByID)
